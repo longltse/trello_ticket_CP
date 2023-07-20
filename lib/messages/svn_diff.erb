@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    /* CSS styles taken from https://github.com/yegor256/tacit */
+    pre, code, kbd, samp, var, output {
+      font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 14.4px
+    }
+
+    pre code {
+      background: none;
+      border: 0;
+      line-height: 29.7px;
+      padding: 0
+    }
+
+    code, kbd {
+      background: #daf1e0;
+      border-radius: 3.6px;
+      color: #2a6f3b;
+      display: inline-block;
+      line-height: 18px;
+      padding: 3.6px 6.3px 2.7px
+    }
+
+    a {
+      color: #275a90;
+      text-decoration: none
+    }
+
+    a:hover {
+      text-decoration: underline
+    }
+
+    * {
+      border: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+      box-sizing: border-box;
+      margin: 0;
+      max-width: 100%;
+      padding: 0;
+      vertical-align: baseline;
+      font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-stretch: normal;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 29.7px
+    }
+
+    html, body {
+      width: 100%
+    }
+
+    html {
+      height: 100%
+    }
+
+    body {
+      background: #fff;
+      color: #1a1919;
+      padding: 36px
+    }
+
+    th, td {
+      padding-left: 3px;
+      padding-right: 3px;
+    }
+
+    th {
+      font-weight: bold;
+    }
+  </style>
+  <title>SVN log</title>
+</head>
+<body>
+<p>Hi,</p>
+<p>The following file(s) changed since <code><%= since_rev %></code> rev in
+  <a href="<%= svn_url %>"><%= svn_url %></a>:</p>
+<table summary="diff">
+  <tr>
+    <th id="rev">rev</th>
+    <th id="author">Author</th>
+    <th id="time">When</th>
+    <th id="msg">Message</th>
+  </tr>
+  <% commits.each do |commit| %>
+    <tr>
+      <td>
+        <div class="auto">
+          <a href="<%= commit_url %><%= commit.rev %>"><%= commit.rev %></a>
+        </div>
+      </td>
+      <td>
+        <div class="auto">
+          <a href="<%= user %><%= commit.author %>"><%= commit.author %></a>
+        </div>
+      </td>
+      <td><%= commit.time %></td>
+      <td><%= commit.lines[1] %></td>
+    </tr>
+  <% end %>
+</table>
+<p>Posted by
+  <a href="https://github.com/dgroup/lazylead">lazylead v<%= version %></a>.
+</p>
+</body>
+</html>

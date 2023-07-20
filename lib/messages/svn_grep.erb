@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    /* CSS styles taken from https://github.com/yegor256/tacit */
+    pre, code, kbd, samp, var, output {
+      font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 14.4px
+    }
+
+    pre code {
+      background: none;
+      border: 0;
+      line-height: 29.7px;
+      padding: 0
+    }
+
+    code, kbd {
+      background: #daf1e0;
+      border-radius: 3.6px;
+      color: #2a6f3b;
+      display: inline-block;
+      line-height: 18px;
+      padding: 3.6px 6.3px 2.7px
+    }
+
+    a {
+      color: #275a90;
+      text-decoration: none
+    }
+
+    a:hover {
+      text-decoration: underline
+    }
+
+    * {
+      border: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+      box-sizing: border-box;
+      margin: 0;
+      max-width: 100%;
+      padding: 0;
+      vertical-align: baseline;
+      font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-stretch: normal;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 29.7px
+    }
+
+    html, body {
+      width: 100%
+    }
+
+    html {
+      height: 100%
+    }
+
+    body {
+      background: #fff;
+      color: #1a1919;
+      padding: 36px
+    }
+
+    td {
+      padding: 2px;
+      vertical-align: top;
+    }
+
+    .commit * {
+      padding-left: 4px;
+      font-size: 8px;
+      line-height: 15px;
+    }
+  </style>
+  <title>SVN log</title>
+</head>
+<body>
+<p>Hi,</p>
+<p>The following file(s) contain text <code><%= text %></code> in
+  <a href="<%= svn_url %>"><%= svn_url %></a>:</p>
+<table summary="table with svn commits">
+  <tr>
+    <th id="rev">rev</th>
+    <th id="when">when</th>
+    <th id="author">author</th>
+    <th id="commit_msg" style="text-align: left">commit</th>
+  </tr>
+  <% entries.each do |commit| %>
+    <tr>
+      <td><a href="<%= commit_url %><%= commit.rev %>"><%= commit.rev %></a></td>
+      <td><%= commit.time %></td>
+      <td><a href="<%= user %><%= commit.author %>"><%= commit.author %></a></td>
+      <td>
+        <b><p><%= commit.msg %></p></b>
+        <% commit.diff(text.split(",")).each do |line| %>
+          <% if line.start_with?("+++") || line.start_with?("---") %>
+            <p style="background: gainsboro;"><%= line.gsub(/[<>]/, '<' => '&lt;', '>' => '&gt;') %></p>
+          <% elsif text.split(",").any? { |t| line.include? t } %>
+            <p style="background: #F9F103;"><%= line.gsub(/[<>]/, '<' => '&lt;', '>' => '&gt;') %></p>
+          <% elsif line.start_with?("+") %>
+            <p style="<%= "background: darkseagreen;" %>"><%= line.gsub(/[<>]/, '<' => '&lt;', '>' => '&gt;') %></p>
+          <% elsif line.start_with?("-") %>
+            <p style="<%= "background: lightsalmon;" %>"><%= line.gsub(/[<>]/, '<' => '&lt;', '>' => '&gt;') %></p>
+          <% else %>
+            <p style="background: gainsboro;"><%= line.gsub(/[<>]/, '<' => '&lt;', '>' => '&gt;') %></p>
+          <% end %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+<p>Posted by<a href="https://github.com/dgroup/lazylead">lazylead v<%= version %></a>.</p>
+</body>
+</html>

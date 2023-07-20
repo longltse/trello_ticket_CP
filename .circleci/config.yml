@@ -1,0 +1,55 @@
+# @todo #/DEV Define automatic integration between rultor and Circle CI.
+#  Right not its not clear how to automatically accept the merge requests into master.
+#  Without this integration the release history won't be clear.
+version: 2
+jobs:
+  deploy:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: "Build LL image"
+          command: |
+            set -e
+            COMMIT_URL="https://github.com/dgroup/lazylead/commit/${CIRCLE_SHA1}"
+            sed -i "s/0\.0\.0/${DOCKER_RELEASE_TAGS}/g" lib/lazylead/version.rb
+            docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+              --build-arg VCS_REF=`git rev-parse --short HEAD` \
+              --build-arg version=${DOCKER_RELEASE_TAGS} \
+              -t dgroup/lazylead:$CIRCLE_BRANCH . \
+              -f .docker/Dockerfile
+            echo "Available LL images:"
+            docker images | grep lazylead
+            docker run --rm dgroup/lazylead:${CIRCLE_BRANCH} bin/lazylead --verbose > trace.log
+            cat trace.log
+            expected="No tasks found"
+            echo "Ensure that app prints the line '${expected}'."
+            grep --color "${expected}" trace.log
+      - run:
+          name: "Push LL image"
+          command: |
+            chmod +x .circleci/release_image.sh
+            .circleci/release_image.sh
+      - run:
+          name: "Build & push LL VCS image"
+          command: |
+            sed -i "s/0\.0\.0/${DOCKER_RELEASE_TAGS}/g" .docker/vcs.dockerfile
+            sed -i "s/0\.0\.0/${DOCKER_RELEASE_TAGS}/g" lib/lazylead/version.rb
+            docker build -t dgroup/lazylead:${DOCKER_RELEASE_TAGS}-vcs . -f .docker/vcs.dockerfile \
+              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+              --build-arg VCS_REF=`git rev-parse --short HEAD` \
+              --build-arg version=${DOCKER_RELEASE_TAGS}
+            docker push dgroup/lazylead:${DOCKER_RELEASE_TAGS}-vcs
+      - run:
+          name: "Reset tag to master"
+          command: |
+            curl -s -X POST -u ${CI_TOKEN}:""  --url "https://circleci.com/api/v2/project/gh/dgroup/lazylead/envvar" -H "accept: application/json" -H "content-type: application/json" -d "{ \"name\": \"DOCKER_RELEASE_TAGS\", \"value\": \"master\" }"
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only:
+                - master

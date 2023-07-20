@@ -1,0 +1,12 @@
+coverage/
+Gemfile.lock
+*.gem
+.bundle/
+.DS_Store
+rdoc/
+*.db
+*.lock
+*.log
+*.iml
+*.iws
+/.idea/

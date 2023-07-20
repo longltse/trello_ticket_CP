@@ -1,0 +1,22 @@
+version: '2.3'
+
+# @todo #/DEV Define openshift template in order to deploy into Openshift/Kubernetes/etcN environment.
+services:
+
+  lazylead:
+    image: dgroup/lazylead:latest
+    container_name: ll
+    mem_limit: 128m
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile
+      args:
+        release_tags: "latest 0.1.x"
+        version: "0.1.x"
+    environment:
+      jira_url: https://jira.spring.io
+      file_postman_dir: "logs"
+    volumes:
+      - .local:/lazylead/db
+      - .local:/lazylead/logs
+    entrypoint: bin/lazylead --trace --verbose --log-file /lazylead/logs/ll{{.%Y-%m-%dT%H:%M:%S}}.log --sqlite db/ll.db

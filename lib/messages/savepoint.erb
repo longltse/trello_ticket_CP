@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>    /* CSS styles taken from https://github.com/yegor256/tacit */
+  a {
+    color: #275a90;
+    text-decoration: none
+  }
+
+  a:hover {
+    text-decoration: underline
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    max-width: 100%;
+    padding: 0;
+    vertical-align: baseline;
+    font-family: system-ui, \"Helvetica Neue\", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 29.7px
+  }
+
+  body {
+    background: #fff;
+    color: #1a1919;
+    padding: 36px
+  }
+  </style>
+  <title>LL <%= Date.today %></title>
+</head>
+<body>
+<p>Hi,</p>
+<p>PFA the LL configuration at <%= DateTime.now %>.</p>
+<p>Posted by
+  <a href="https://github.com/dgroup/lazylead">lazylead v<%= version %></a>.
+</p>
+</body>
+</html>
